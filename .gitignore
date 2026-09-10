@@ -1,0 +1,9 @@
+﻿venv/
+__pycache__/
+*.pyc
+data/listings/
+data/uploads/
+data/*.db
+data/*.faiss
+data/*.json
+.env

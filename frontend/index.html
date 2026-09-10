@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GhostListing — Moderator Review</title>
+<style>
+  body { font-family: -apple-system, sans-serif; max-width: 700px; margin: 40px auto; background: #f7f7f8; }
+  h1 { font-size: 20px; }
+  .card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .verdict { font-weight: 600; }
+  .INCONSISTENT { color: #c0392b; }
+  .CONSISTENT { color: #27ae60; }
+  .UNCERTAIN { color: #e67e22; }
+  button { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; margin-right: 8px; font-size: 14px; }
+  .approve { background: #c0392b; color: white; }
+  .reject { background: #eee; }
+  .empty { color: #888; text-align: center; padding: 40px 0; }
+</style>
+</head>
+<body>
+  <h1>Pending listings flagged for review</h1>
+  <div id="list" class="empty">Loading…</div>
+
+<script>
+const API = "http://localhost:8000";
+
+async function loadPending() {
+  const res = await fetch(`${API}/listings/pending`);
+  const items = await res.json();
+  const container = document.getElementById("list");
+
+  if (items.length === 0) {
+    container.className = "empty";
+    container.innerHTML = "Nothing pending — all clear.";
+    return;
+  }
+
+  container.className = "";
+  container.innerHTML = items.map(item => `
+    <div class="card">
+      <div><strong>${item.listing_id}</strong> (seller: ${item.seller_id})</div>
+      <div class="verdict ${item.consistency_verdict}">${item.consistency_verdict}</div>
+      <div>${item.consistency_reason || ""}</div>
+      <div style="margin-top:10px;">
+        <button class="approve" onclick="decide('${item.thread_id}', 'confirmed_fraud')">Confirm fraud</button>
+        <button class="reject" onclick="decide('${item.thread_id}', 'false_positive')">False positive</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function decide(threadId, decision) {
+  const form = new FormData();
+  form.append("decision", decision);
+  await fetch(`${API}/listings/${threadId}/decide`, { method: "POST", body: form });
+  loadPending();
+}
+
+loadPending();
+setInterval(loadPending, 5000); // poll for new flags every 5s
+</script>
+</body>
+</html>
