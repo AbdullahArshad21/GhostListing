@@ -7,3 +7,5 @@ data/*.db
 data/*.faiss
 data/*.json
 .env
+
+src/data/

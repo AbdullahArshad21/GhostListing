@@ -6,7 +6,8 @@ Run this AFTER you've downloaded sample images into data/listings/<seller_name>/
 Usage:
     python src/build_index.py
 """
-
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import os
 import glob
 from embed import ListingImageEmbedder
