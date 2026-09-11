@@ -7,19 +7,21 @@ whether a listing's claimed text/category is consistent with what's
 actually in its photo.
 
 Get a free API key at https://console.groq.com (no card required).
-Then in PowerShell:  $env:GROQ_API_KEY = "your-key-here"
+Store it in a .env file at the project root as: GROQ_API_KEY=your-key-here
 """
-
+import re
 import os
 import base64
+from pathlib import Path
 from groq import Groq
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).parent.parent / ".env")
 
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-VISION_MODEL = "llama-4-scout-17b-16e-instruct"  # check console.groq.com/docs/models
-                                                   # for the current vision-capable model name
-                                                   # if this one has been renamed/deprecated
-TEXT_MODEL = "llama-3.3-70b-versatile"
+VISION_MODEL = "qwen/qwen3.6-27b"
+TEXT_MODEL = "openai/gpt-oss-20b"
 
 
 def _encode_image(image_path: str) -> str:
@@ -48,11 +50,14 @@ def describe_image(image_path: str) -> str:
                 ],
             }
         ],
-        temperature=0.1,  # low temperature - we want factual description, not creativity
-        max_tokens=200,
+        temperature=0.1,
+        max_tokens=300,
+        reasoning_effort="none",
+        reasoning_format="hidden",
     )
-    return response.choices[0].message.content
-
+    content = response.choices[0].message.content
+    content = re.sub(r'<think>.*?</think>', '', content, flags=re.DOTALL).strip()
+    return content
 
 def check_consistency(image_description: str, listing_title: str,
                        listing_description: str, listing_category: str) -> dict:
@@ -83,9 +88,12 @@ the item type). Do not flag minor subjective differences in wording."""
         model=TEXT_MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.0,
-        max_tokens=100,
+        max_tokens=300,
+        reasoning_effort="none",
+        reasoning_format="hidden",
     )
     text = response.choices[0].message.content
+    text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
 
     verdict = "UNCERTAIN"
     reason = text
@@ -99,7 +107,6 @@ the item type). Do not flag minor subjective differences in wording."""
 
 
 if __name__ == "__main__":
-    # Smoke test - run this after Part H (setting GROQ_API_KEY) with a real image path
     import sys
     if len(sys.argv) > 1:
         desc = describe_image(sys.argv[1])
