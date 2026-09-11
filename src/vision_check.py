@@ -89,7 +89,7 @@ the item type). Do not flag minor subjective differences in wording."""
         messages=[{"role": "user", "content": prompt}],
         temperature=0.0,
         max_tokens=300,
-        reasoning_effort="none",
+        reasoning_effort="low",
         reasoning_format="hidden",
     )
     text = response.choices[0].message.content

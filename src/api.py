@@ -10,7 +10,8 @@ Ties everything together into an actual running app:
 
 Run with:  uvicorn api:app --reload --port 8000
 """
-
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import os
 import sqlite3
 import shutil
