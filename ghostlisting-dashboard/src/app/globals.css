@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --color-base: #101319;
+  --color-panel: #1a1e27;
+  --color-panel-raised: #1f2430;
+  --color-border: #2a2f3c;
+  --color-border-soft: #21252f;
+  --color-text: #eceef2;
+  --color-text-muted: #8b92a3;
+  --color-amber: #e0a940;
+  --color-brick: #d0605a;
+  --color-sage: #63a986;
+}
+
+body {
+  background:
+    radial-gradient(circle at 15% 0%, rgba(224, 169, 64, 0.06), transparent 45%),
+    radial-gradient(circle at 85% 100%, rgba(99, 169, 134, 0.05), transparent 40%),
+    var(--color-base);
+  color: var(--color-text);
+  font-family: var(--font-sans), sans-serif;
+  min-height: 100vh;
+}
+
+.font-mono {
+  font-family: var(--font-mono), monospace;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.18s ease-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #363c4a; }

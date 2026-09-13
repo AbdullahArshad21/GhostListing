@@ -9,3 +9,6 @@ data/*.json
 .env
 
 src/data/
+
+ghostlisting-dashboard/node_modules/
+ghostlisting-dashboard/.next/

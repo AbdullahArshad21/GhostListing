@@ -2,20 +2,25 @@
 GhostListing - FastAPI Backend
 ------------------------------------
 Ties everything together into an actual running app:
-  POST /listings/upload      -> submit a new listing, runs the graph up to
-                                  the human-review pause (or straight through
-                                  if clean)
-  GET  /listings/pending      -> list of listings currently paused for review
-  POST /listings/{id}/decide  -> resume the graph with a moderator's decision
+  POST /listings/upload           -> submit a new listing, runs the graph up
+                                       to the human-review pause (or straight
+                                       through if clean)
+  GET  /listings/pending           -> list of listings currently paused for review
+  GET  /listings/resolved          -> recently decided listings (audit history)
+  GET  /listings/{thread_id}/image -> serves the uploaded image for display
+  POST /listings/{thread_id}/decide -> resume the graph with a moderator's decision
 
 Run with:  uvicorn api:app --reload --port 8000
 """
+
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-import os
+
 import sqlite3
 import shutil
+import json
 from fastapi import FastAPI, UploadFile, Form
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from embed import ListingImageEmbedder
@@ -26,7 +31,7 @@ import vision_check
 app = FastAPI(title="GhostListing")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # fine for local dev; restrict this before any real deployment
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -44,7 +49,12 @@ def init_db():
             thread_id TEXT PRIMARY KEY,
             listing_id TEXT,
             seller_id TEXT,
+            listing_title TEXT,
+            listing_description TEXT,
+            listing_category TEXT,
+            image_filename TEXT,
             flagged INTEGER,
+            matches_json TEXT,
             consistency_verdict TEXT,
             consistency_reason TEXT,
             human_decision TEXT,
@@ -57,8 +67,6 @@ def init_db():
 
 init_db()
 
-# Loaded once at startup - the CLIP model and FAISS index are expensive to
-# reload per-request
 embedder = ListingImageEmbedder()
 index = ListingSimilarityIndex(dim=512, index_path="data/listing_index")
 if os.path.exists(f"{index.index_path}.faiss"):
@@ -97,8 +105,6 @@ async def upload_listing(
         "listing_category": listing_category,
     }, config)
 
-    # Only add to the searchable index AFTER processing this listing against
-    # the existing index - otherwise it would match against itself
     vec = embedder.embed_image(save_path)
     index.add_listing(vec, listing_id, seller_id)
     index.save()
@@ -106,9 +112,13 @@ async def upload_listing(
     if result["flagged"]:
         conn = sqlite3.connect(DB_PATH)
         conn.execute(
-            "INSERT OR REPLACE INTO audit_log (thread_id, listing_id, seller_id, flagged, "
-            "consistency_verdict, consistency_reason, human_decision) VALUES (?,?,?,?,?,?,?)",
-            (thread_id, listing_id, seller_id, 1,
+            "INSERT OR REPLACE INTO audit_log "
+            "(thread_id, listing_id, seller_id, listing_title, listing_description, "
+            "listing_category, image_filename, flagged, matches_json, "
+            "consistency_verdict, consistency_reason, human_decision) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            (thread_id, listing_id, seller_id, listing_title, listing_description,
+             listing_category, listing_id, 1, json.dumps(result["matches"]),
              result.get("consistency_verdict"), result.get("consistency_reason"), None),
         )
         conn.commit()
@@ -124,15 +134,43 @@ async def upload_listing(
     return {"status": "clean", "thread_id": thread_id}
 
 
+def _rows_to_dicts(rows):
+    results = []
+    for r in rows:
+        row = dict(r)
+        row["matches"] = json.loads(row["matches_json"]) if row["matches_json"] else []
+        del row["matches_json"]
+        results.append(row)
+    return results
+
+
 @app.get("/listings/pending")
 async def get_pending():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
-        "SELECT * FROM audit_log WHERE human_decision IS NULL"
+        "SELECT * FROM audit_log WHERE human_decision IS NULL ORDER BY created_at DESC"
     ).fetchall()
     conn.close()
-    return [dict(r) for r in rows]
+    return _rows_to_dicts(rows)
+
+
+@app.get("/listings/resolved")
+async def get_resolved():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute(
+        "SELECT * FROM audit_log WHERE human_decision IS NOT NULL "
+        "ORDER BY created_at DESC LIMIT 50"
+    ).fetchall()
+    conn.close()
+    return _rows_to_dicts(rows)
+
+
+@app.get("/listings/{thread_id}/image")
+async def get_image(thread_id: str):
+    path = os.path.join(UPLOAD_DIR, thread_id)
+    return FileResponse(path)
 
 
 @app.post("/listings/{thread_id}/decide")
@@ -140,7 +178,7 @@ async def decide(thread_id: str, decision: str = Form(...)):
     """decision should be 'confirmed_fraud' or 'false_positive'"""
     config = {"configurable": {"thread_id": thread_id}}
     graph.update_state(config, {"human_decision": decision})
-    graph.invoke(None, config)  # resumes past the human_review pause
+    graph.invoke(None, config)
 
     conn = sqlite3.connect(DB_PATH)
     conn.execute(
