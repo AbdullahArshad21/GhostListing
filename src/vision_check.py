@@ -51,13 +51,14 @@ def describe_image(image_path: str) -> str:
             }
         ],
         temperature=0.1,
-        max_tokens=300,
+        max_tokens=600,
         reasoning_effort="none",
         reasoning_format="hidden",
     )
     content = response.choices[0].message.content
     content = re.sub(r'<think>.*?</think>', '', content, flags=re.DOTALL).strip()
     return content
+
 
 def check_consistency(image_description: str, listing_title: str,
                        listing_description: str, listing_category: str) -> dict:
@@ -80,9 +81,19 @@ Answer in this exact format:
 VERDICT: [CONSISTENT / INCONSISTENT / UNCERTAIN]
 REASON: [one sentence explaining why]
 
-Flag as INCONSISTENT only for clear, factual mismatches (e.g. photo shows
-a used item but listing claims "brand new", or the category doesn't match
-the item type). Do not flag minor subjective differences in wording."""
+Flag as INCONSISTENT for clear, factual mismatches (e.g. photo shows a
+used item but listing claims "brand new", or the category doesn't match
+the item type). Do not flag minor subjective differences in wording.
+
+IMPORTANT: a claim of "brand new", "sealed", or "never used" is a strong,
+specific claim that requires strong, specific visual evidence - original
+packaging, shrink-wrap, tags, or a manufacturer seal actually visible in
+the photo. An item merely looking clean or undamaged is NOT sufficient
+evidence of "brand new, sealed, never used" - it only tells you the item
+isn't visibly damaged, not that it's unused. If the photo shows the item
+unpackaged with no visible evidence of "new/sealed" status but the listing
+makes that specific claim, respond UNCERTAIN rather than CONSISTENT, since
+the photo cannot actually confirm that claim either way."""
 
     response = client.chat.completions.create(
         model=TEXT_MODEL,

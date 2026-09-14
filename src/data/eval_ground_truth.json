@@ -1,0 +1,127 @@
+{
+  "seller_b_exact_dup_00.jpg": {
+    "duplicate_of": "seller_c_item_025.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_b_exact_dup_01.jpg": {
+    "duplicate_of": "seller_a_item_052.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_a_exact_dup_02.jpg": {
+    "duplicate_of": "seller_e_item_023.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_a_exact_dup_03.jpg": {
+    "duplicate_of": "seller_e_item_058.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_b_exact_dup_04.jpg": {
+    "duplicate_of": "seller_e_item_002.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_e_exact_dup_05.jpg": {
+    "duplicate_of": "seller_a_item_026.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_c_exact_dup_06.jpg": {
+    "duplicate_of": "seller_a_item_005.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_d_exact_dup_07.jpg": {
+    "duplicate_of": "seller_e_item_003.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_a_exact_dup_08.jpg": {
+    "duplicate_of": "seller_e_item_014.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_a_exact_dup_09.jpg": {
+    "duplicate_of": "seller_e_item_036.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_d_exact_dup_10.jpg": {
+    "duplicate_of": "seller_e_item_003.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_a_exact_dup_11.jpg": {
+    "duplicate_of": "seller_b_item_035.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_d_exact_dup_12.jpg": {
+    "duplicate_of": "seller_b_item_026.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_a_exact_dup_13.jpg": {
+    "duplicate_of": "seller_b_item_036.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_b_exact_dup_14.jpg": {
+    "duplicate_of": "seller_c_item_006.jpg",
+    "method": "exact",
+    "is_fraud": true
+  },
+  "seller_b_manip_crop_00.jpg": {
+    "duplicate_of": "seller_e_item_023.jpg",
+    "method": "crop",
+    "is_fraud": true
+  },
+  "seller_b_manip_recolor_01.jpg": {
+    "duplicate_of": "seller_a_item_036.jpg",
+    "method": "recolor",
+    "is_fraud": true
+  },
+  "seller_c_manip_recompress_02.jpg": {
+    "duplicate_of": "seller_a_item_031.jpg",
+    "method": "recompress",
+    "is_fraud": true
+  },
+  "seller_d_manip_crop_03.jpg": {
+    "duplicate_of": "seller_e_item_049.jpg",
+    "method": "crop",
+    "is_fraud": true
+  },
+  "seller_e_manip_recolor_04.jpg": {
+    "duplicate_of": "seller_c_item_037.jpg",
+    "method": "recolor",
+    "is_fraud": true
+  },
+  "seller_c_manip_recompress_05.jpg": {
+    "duplicate_of": "seller_d_item_019.jpg",
+    "method": "recompress",
+    "is_fraud": true
+  },
+  "seller_c_manip_crop_06.jpg": {
+    "duplicate_of": "seller_b_item_044.jpg",
+    "method": "crop",
+    "is_fraud": true
+  },
+  "seller_a_manip_recolor_07.jpg": {
+    "duplicate_of": "seller_b_item_036.jpg",
+    "method": "recolor",
+    "is_fraud": true
+  },
+  "seller_e_manip_recompress_08.jpg": {
+    "duplicate_of": "seller_c_item_056.jpg",
+    "method": "recompress",
+    "is_fraud": true
+  },
+  "seller_e_manip_crop_09.jpg": {
+    "duplicate_of": "seller_c_item_018.jpg",
+    "method": "crop",
+    "is_fraud": true
+  }
+}

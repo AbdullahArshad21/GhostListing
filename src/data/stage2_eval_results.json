@@ -1,0 +1,11 @@
+{
+  "outcomes": [
+    {
+      "listing_id": "seller_c_exact_dup_06.jpg",
+      "is_fraud": true,
+      "verdict": "INCONSISTENT",
+      "predicted_fraud": true,
+      "reason": "The photo shows a used, unpackaged BMX bike with visible dirt and wear, contradicting the listing\u2019s claim that it is brand new, sealed, and never used."
+    }
+  ]
+}

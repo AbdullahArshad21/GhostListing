@@ -1,14 +1,27 @@
-﻿venv/
+venv/
 __pycache__/
 *.pyc
+.env
+ghostlisting-dashboard/node_modules/
+ghostlisting-dashboard/.next/
+
 data/listings/
 data/uploads/
 data/*.db
 data/*.faiss
 data/*.json
-.env
+data/eval_listings/
 
-src/data/
+src/data/listings/
+src/data/uploads/
+src/data/*.db
+src/data/*.faiss
+src/data/*.json
+src/data/eval_listings/
 
-ghostlisting-dashboard/node_modules/
-ghostlisting-dashboard/.next/
+!data/eval_ground_truth.json
+!data/eval_results.json
+!data/stage2_eval_results.json
+!src/data/eval_ground_truth.json
+!src/data/eval_results.json
+!src/data/stage2_eval_results.json
